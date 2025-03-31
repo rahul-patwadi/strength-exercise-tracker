@@ -56,20 +56,88 @@ for f in files:
     df["category"] = category
     
     if "Accelerometer" in f:
+        #we're creating a set with the dataframe. We do this to visualize individual sets later on. We can categorise by sets, for example: "what does set 10 look like." Just like a checkpoint."
+        df["set"] = acc_set
+        acc_set +=1
         acc_df = pd.concat([acc_df, df])
     
     if "Gyroscope" in f:
+        df["set"] = gyr_set
+        gyr_set +=1
         gyr_df = pd.concat([gyr_df, df])    
 
 # --------------------------------------------------------------
 # Working with datetimes
 # --------------------------------------------------------------
 
+#We have different time zones in the world, which causes problems. Unix time helps us to keep one standardized time and we can convert it into a UTC time in readable format.
+
+acc_df.info()
+pd.to_datetime(df["epoch (ms)"], unit = "ms")
+
+#we will now turn the dataframes to time series dataframes so that we can later use the resample method.
+acc_df.index = pd.to_datetime(acc_df["epoch (ms)"], unit = "ms")
+gyr_df.index = pd.to_datetime(gyr_df["epoch (ms)"], unit = "ms")
+
+del acc_df["epoch (ms)"]
+del acc_df["time (01:00)"]
+del acc_df["elapsed (s)"]
+
+del gyr_df["epoch (ms)"]
+del gyr_df["time (01:00)"]
+del gyr_df["elapsed (s)"]
+
 
 # --------------------------------------------------------------
 # Turn into function
 # --------------------------------------------------------------
+ 
+files = glob("../../data/raw/MetaMotion")
 
+def read_files_data(files):
+    
+    acc_df = pd.DataFrame()
+    gyr_df = pd.DataFrame()
+
+    acc_set = 1
+    gyr_set = 1
+
+    for f in files:
+        participant = filename.split("-")[0].replace(data_path,"")
+        label = f.split("-")[1]
+        category = f.split("-")[2].rstrip("123").rstrip("_MetaWear_2019")
+    
+        df = pd.read_csv(f)
+    
+        df["participant"] = participant
+        df["label"] = label
+        df["category"] = category
+    
+        if "Accelerometer" in f:
+            #we're creating a set with the dataframe. We do this to visualize individual sets later on. We can categorise by sets, for example: "what does set 10 look like." Just like a checkpoint."
+            df["set"] = acc_set
+            acc_set +=1
+            acc_df = pd.concat([acc_df, df])
+    
+        if "Gyroscope" in f:
+            df["set"] = gyr_set
+            gyr_set +=1
+            gyr_df = pd.concat([gyr_df, df])    
+            
+    acc_df.index = pd.to_datetime(acc_df["epoch (ms)"], unit = "ms")
+    gyr_df.index = pd.to_datetime(gyr_df["epoch (ms)"], unit = "ms")
+
+    del acc_df["epoch (ms)"]
+    del acc_df["time (01:00)"]
+    del acc_df["elapsed (s)"]
+
+    del gyr_df["epoch (ms)"]
+    del gyr_df["time (01:00)"]
+    del gyr_df["elapsed (s)"]
+
+    return acc_df, gyr_df
+ 
+acc_df, gyr_df = read_files_data(files)
 
 # --------------------------------------------------------------
 # Merging datasets
