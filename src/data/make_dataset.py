@@ -142,7 +142,23 @@ acc_df, gyr_df = read_files_data(files)
 # --------------------------------------------------------------
 # Merging datasets
 # --------------------------------------------------------------
+data_merged = pd.concat([acc_df.iloc[:,:3],gyr_df], axis=1)
+#dropping the NA ones because the gyroscope data is measured at a higher freq. than the accelerometer data. So some places we have missing data.
+data_merged.dropna()
 
+#Rename columns
+data_merged.columns = [
+    "acc_x",
+    "acc_y",
+    "acc_z",
+    "gyr_x",
+    "gyr_y",
+    "gyr_z",
+    "label",
+    "category",
+    "participant",
+    "set",
+]
 
 # --------------------------------------------------------------
 # Resample data (frequency conversion)
