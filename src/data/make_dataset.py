@@ -1,7 +1,8 @@
 import pandas as pd
 from glob import glob
 import os
-print(os.path.exists("data/raw/MetaMotion/-bench-heavy_MetaWear_2019-01-14T14.22.49.165_C42732BE255C_Accelerometer_12.500Hz_1.4.4.csv"))
+print("current working directory:",os.getcwd())
+print(os.path.exists("../data/raw/MetaMotion/-bench-heavy_MetaWear_2019-01-14T14.22.49.165_C42732BE255C_Accelerometer_12.500Hz_1.4.4.csv"))
 # --------------------------------------------------------------
 # Read single CSV file
 # --------------------------------------------------------------
@@ -23,10 +24,10 @@ len(files)
 data_path = "../../data/raw/MetaMotion/"
 f = files[1]
 
-filename = os.path.basename(f)
-
-participant = filename.split("-")[0].replace(data_path,"")
+participant = f.split("-")[0].replace(data_path,"")
 label = f.split("-")[1]
+# Better method to remove substrings except heavy or medium:
+# category = f.split("-")[2].replace(f.split("-")[2].lstrip("heavymedium"), "")    
 category = f.split("-")[2].rstrip("123").rstrip("_MetaWear_2019")
 
 df = pd.read_csv(f)
@@ -45,8 +46,12 @@ acc_set = 1
 gyr_set = 1
 
 for f in files:
-    participant = filename.split("-")[0].replace(data_path,"")
+    participant = f.split("-")[0].replace(data_path,"")
     label = f.split("-")[1]
+    
+    # Better method to remove substrings except heavy or medium:
+    # category = f.split("-")[2].replace(f.split("-")[2].lstrip("heavymedium"), "")
+    
     category = f.split("-")[2].rstrip("123").rstrip("_MetaWear_2019")
     
     df = pd.read_csv(f)
@@ -92,7 +97,8 @@ del gyr_df["elapsed (s)"]
 # Turn into function
 # --------------------------------------------------------------
  
-files = glob("../../data/raw/MetaMotion")
+files = glob("../../data/raw/MetaMotion/*.csv")
+
 
 def read_files_data(files):
     
@@ -103,7 +109,7 @@ def read_files_data(files):
     gyr_set = 1
 
     for f in files:
-        participant = filename.split("-")[0].replace(data_path,"")
+        participant = f.split("-")[0].replace(data_path,"")
         label = f.split("-")[1]
         category = f.split("-")[2].rstrip("123").rstrip("_MetaWear_2019")
     
@@ -166,8 +172,28 @@ data_merged.columns = [
 
 # Accelerometer:    12.500HZ
 # Gyroscope:        25.000Hz
+#resampling: so we have the measurements at a certain frequency, we want to bring that to a higher or lower frequency.
+sampling = {
+    "acc_x": "mean",
+    "acc_y": "mean",
+    "acc_z": "mean",
+    "gyr_x": "mean",
+    "gyr_y": "mean",
+    "gyr_z": "mean",
+    "label":"last",
+    "category":"last",
+    "participant":"last",
+    "set":"last",
+}
+data_merged.columns
+data_merged[:1000].resample(rule="200ms").apply(sampling)
 
+#Split by day
+days = [g for n, g in data_merged.groupby(pd.Grouper(freq="D"))]
+data_resampled = pd.concat([df.resample(rule="200ms").apply(sampling).dropna() for df in days])
 
+data_resampled["set"] = data_resampled["set"].astype("int")
+data_resampled.info()
 # --------------------------------------------------------------
 # Export dataset
 # --------------------------------------------------------------
