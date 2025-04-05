@@ -2,7 +2,7 @@ import pandas as pd
 from glob import glob
 import os
 print("current working directory:",os.getcwd())
-print(os.path.exists("../data/raw/MetaMotion/-bench-heavy_MetaWear_2019-01-14T14.22.49.165_C42732BE255C_Accelerometer_12.500Hz_1.4.4.csv"))
+print(os.path.exists("../../data/raw/MetaMotion/-bench-heavy_MetaWear_2019-01-14T14.22.49.165_C42732BE255C_AcAcelerometer_12.500Hz_1.4.4.csv"))
 # --------------------------------------------------------------
 # Read single CSV file
 # --------------------------------------------------------------
@@ -197,3 +197,4 @@ data_resampled.info()
 # --------------------------------------------------------------
 # Export dataset
 # --------------------------------------------------------------
+data_resampled.to_pickle("../../data/interim/01_data_processed.pkl")
