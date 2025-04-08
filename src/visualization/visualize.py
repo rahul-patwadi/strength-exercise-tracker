@@ -20,7 +20,7 @@ plt.plot(set_df["acc_y"].reset_index(drop=True))
 for label in df["label"].unique():
     subset = df[df["label"]==label]
     fig, ax = plt.subplots()
-    plt.plot(subset["acc_y"].reset_index(drop=True), label=label)
+    plt.plot(subset[:100] ["acc_y"].reset_index(drop=True), label=label)
     plt.legend()
     plt.show()
 

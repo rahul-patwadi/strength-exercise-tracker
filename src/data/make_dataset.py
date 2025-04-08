@@ -21,7 +21,7 @@ len(files)
 # Extract features from filename
 # --------------------------------------------------------------
 
-data_path = "../../data/raw/MetaMotion/"
+data_path = "../../data/raw/MetaMotion\\"
 f = files[1]
 
 participant = f.split("-")[0].replace(data_path,"")
@@ -160,9 +160,9 @@ data_merged.columns = [
     "gyr_x",
     "gyr_y",
     "gyr_z",
+    "participant",
     "label",
     "category",
-    "participant",
     "set",
 ]
 
