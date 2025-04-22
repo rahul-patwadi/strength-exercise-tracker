@@ -34,8 +34,13 @@ mpl.rcParams["figure.dpi"] = 100
 # --------------------------------------------------------------
 # Compare medium vs. heavy sets
 # --------------------------------------------------------------
-
-
+#comparing medium and heavy sets for squats. We can see that the heavy seta have higher acceleration in the y-axis.
+category_df = df.query("label == 'squat'").query("participant == 'A'").reset_index()
+fig, ax = plt.subplots()
+category_df.groupby(["category"])["acc_y"].plot()
+ax.set_ylabel("acc_y")
+ax.set_xlabel("samples")
+plt.legend()
 # --------------------------------------------------------------
 # Compare participants
 # --------------------------------------------------------------
