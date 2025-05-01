@@ -44,11 +44,25 @@ plt.legend()
 # --------------------------------------------------------------
 # Compare participants
 # --------------------------------------------------------------
-
-
+#so why we are using sort values here is because we want to plot it in order of the participant. If we don't sort it, the plot will be in random order. Reset index is used to reset the index to sample number, or else it will take time as the index which makes the plot look weird.
+participant_df = df.query("label == 'bench'").sort_values("participant").reset_index()
+fig, ax = plt.subplots()
+participant_df.groupby(["participant"])["acc_y"].plot()  
+ax.set_ylabel("acc_y")  
+ax.set_xlabel("samples")
+plt.legend()
 # --------------------------------------------------------------
-# Plot multiple axis
+# Plot multiple axes
 # --------------------------------------------------------------
+label = "squat"
+participant = "A"
+all_axis_df = df.query("label == @label").query(f"participant == @participant").reset_index()
+fig, ax = plt.subplots()
+#we have to use two [[]] instead of [] because pandas does not allow us to plot a series with only one [].We want to plot the three axis in one plot.
+all_axis_df[["acc_x", "acc_y", "acc_z"]].plot(ax=ax)
+ax.set_ylabel("acc_y")
+ax.set_xlabel("samples")
+plt.legend()
 
 
 # --------------------------------------------------------------
